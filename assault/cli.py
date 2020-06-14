@@ -1,11 +1,11 @@
 # python -m assault -r 100 -c 10 -j results.json -u https://google.com
-# python -m assault -s "SERVER:1000" -s "SERVER2:2000" -f example.json
+# python -m assault -s "34.231.255.101:80" -s "34.231.255.101:9000" -f example.json
 import click
 import sys
 import json
 from typing import IO, Any
 
-from assault.http import assault
+from assault.http import assault, ping_servers
 from assault.stats import Results
 
 
@@ -17,15 +17,14 @@ from assault.stats import Results
 @click.option("--server", "-s", default=None, multiple=True, help="Name of the server")
 @click.option("--url", "-u", default=None, help="Link to the website")
 def cli(requests, concurrency, json_file, url, filename, server):
-    if not any([requests, concurrency, json_file, url, filename, server]):
-        raise click.UsageError("Please type --help to see the list of available")
-
     # Create a set to prevent duplicate server/port combinations
     servers = set()
 
     # If --filename or -f option is used then attempt to read
     # the file and add all values to the `servers` set.
-    if filename:
+    # If --server or -s option are used then add those values
+    # to the set.
+    if server and filename:
         try:
             with open(filename) as f:
                 json_servers = json.load(f)
@@ -35,12 +34,20 @@ def cli(requests, concurrency, json_file, url, filename, server):
             print("Error: Unable to open or read JSON file")
             sys.exit(1)
 
-    # If --server or -s option are used then add those values
-    # to the set.
-    if server:
         for s in server:
             servers.add(s)
-    print(servers)
+
+        # Make requests and collect results
+        results = ping_servers(servers)
+        print("Successful Connections")
+        print("---------------------")
+        for server in results['success']:
+            print(server)
+
+        print("\n Failed Connections")
+        print("------------------")
+        for server in results['failure']:
+            print(server)
 
     if json_file:
         try:
