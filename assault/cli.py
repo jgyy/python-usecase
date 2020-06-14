@@ -1,5 +1,8 @@
-# Building the CLI
+# $env:DEBUG="true"; python -m assault -r 100 -c 10 https://google.com
 import click
+
+from assault.http import assault
+
 
 @click.command()
 @click.option("--requests", "-r", default=500, help="Number of requests")
@@ -11,6 +14,7 @@ def cli(requests, concurrency, json_file, url):
     print(f"Concurrency: {concurrency}")
     print(f"JSON File: {json_file}")
     print(f"URL: {url}")
+    assault(url, requests, concurrency)
 
 if __name__ == "__main__":
     cli()
