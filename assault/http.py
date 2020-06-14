@@ -27,12 +27,12 @@ async def distribute_work(url, requests, concurrency, results):
     queue = asyncio.Queue()
 
     # Add an item to the queue for each request we want to make
-    for _ in range(requests):
+    for _ in range(int(requests)):
         queue.put_nowait(url)
 
     # Create workers to match the concurrency
     tasks = []
-    for i in range(concurrency):
+    for i in range(int(concurrency)):
         task = asyncio.create_task(worker(f"worker-{i+1}", queue, results))
         tasks.append(task)
 

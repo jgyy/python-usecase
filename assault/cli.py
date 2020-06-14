@@ -1,4 +1,5 @@
-# python -m assault -r 100 -c 10 --json-file results.json https://google.com
+# python -m assault -r 100 -c 10 -j results.json -u https://google.com
+# python -m assault -s "SERVER:1000" -s "SERVER2:2000" -f example.json
 import click
 import sys
 import json
@@ -9,21 +10,46 @@ from assault.stats import Results
 
 
 @click.command()
-@click.option("--requests", "-r", default=500, help="Number of requests")
-@click.option("--concurrency", "-c", default=1, help="Number of concurrent requests")
+@click.option("--requests", "-r", default=None, help="Number of requests")
+@click.option("--concurrency", "-c", default=None, help="Number of concurrent requests")
 @click.option("--json-file", "-j", default=None, help="Path to output JSON file")
-@click.argument("url")
-def cli(requests, concurrency, json_file, url):
-    output_file = None
+@click.option("--filename", "-f", default=None, help="Name of the json file")
+@click.option("--server", "-s", default=None, multiple=True, help="Name of the server")
+@click.option("--url", "-u", default=None, help="Link to the website")
+def cli(requests, concurrency, json_file, url, filename, server):
+    if not any([requests, concurrency, json_file, url, filename, server]):
+        raise click.UsageError("Please type --help to see the list of available")
+
+    # Create a set to prevent duplicate server/port combinations
+    servers = set()
+
+    # If --filename or -f option is used then attempt to read
+    # the file and add all values to the `servers` set.
+    if filename:
+        try:
+            with open(filename) as f:
+                json_servers = json.load(f)
+                for s in json_servers:
+                    servers.add(s)
+        except:
+            print("Error: Unable to open or read JSON file")
+            sys.exit(1)
+
+    # If --server or -s option are used then add those values
+    # to the set.
+    if server:
+        for s in server:
+            servers.add(s)
+    print(servers)
+
     if json_file:
         try:
             output_file = open(json_file, "w")
         except:
             print(f"Unable to open file {json_file}")
             sys.exit(1)
-    total_time, request_dicts = assault(url, requests, concurrency)
-    results = Results(total_time, request_dicts)
-    if output_file:
+        total_time, request_dicts = assault(url, requests, concurrency)
+        results = Results(total_time, request_dicts)
         display(results, output_file)
 
 

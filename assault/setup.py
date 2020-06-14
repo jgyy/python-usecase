@@ -13,7 +13,9 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'jgyy'
-DESCRIPTION = 'My short description for my project.'
+DESCRIPTION = (
+   "CLI to ensure that HTTP requests can be made to various server/port combinations"
+)
 URL = 'https://github.com/jgyy/python-usecase'
 EMAIL = 'me@example.com'
 AUTHOR = 'jgyy'
@@ -110,11 +112,11 @@ setup(
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
-    license='MIT',
+    license='GNU',
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: GNU License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
