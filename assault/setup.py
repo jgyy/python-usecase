@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# python .\assault\setup.py build
+# python .\assault\setup.py install
 
 # Note: To use the 'upload' functionality of this file, you must:
 #   $ pipenv install twine --dev
@@ -21,7 +22,7 @@ VERSION = '0.1.0'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    # 'requests', 'maya', 'records',
+    'click'
 ]
 
 # What packages are optional?
@@ -105,7 +106,9 @@ setup(
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
-
+    entry_points={
+        'console_scripts': ['assault=assault.cli:cli'],
+    },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
