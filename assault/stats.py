@@ -6,6 +6,7 @@ Writing Doctests and Type Hints
 True
 """
 from typing import List, Dict
+from statistics import mean
 
 
 class Results:
@@ -55,15 +56,15 @@ class Results:
         ... }])
         >>> results.total_time
         10.6
-        >>> results.requests[0]
-        {'status_code': 200, 'request_time': 3.4}
         >>> results.requests[1]
-        {'status_code': 500, 'request_time': 6.1}
+        {'status_code': 200, 'request_time': 3.4}
         >>> results.requests[2]
+        {'status_code': 500, 'request_time': 6.1}
+        >>> results.requests[0]
         {'status_code': 200, 'request_time': 1.04}
         """
         self.total_time = total_time
-        self.requests = requests
+        self.requests = sorted(requests, key=lambda r: r["request_time"])
 
     def slowest(self) -> float:
         """
@@ -82,7 +83,7 @@ class Results:
         >>> results.slowest()
         6.1
         """
-        return 6.1
+        return self.requests[-1]["request_time"]
 
     def fastest(self) -> float:
         """
@@ -101,7 +102,7 @@ class Results:
         >>> results.fastest()
         1.04
         """
-        return 1.04
+        return self.requests[0]["request_time"]
 
     def average_time(self) -> float:
         """
@@ -118,9 +119,9 @@ class Results:
         ...     'request_time': 1.04
         ... }])
         >>> results.average_time()
-        9.846666667
+        3.513333333333333
         """
-        return 9.846666667
+        return mean([r["request_time"] for r in self.requests])
 
     def successful_requests(self) -> int:
         """
@@ -139,4 +140,4 @@ class Results:
         >>> results.successful_requests()
         2
         """
-        return 2
+        return len([r for r in self.requests if r["status_code"] in range(200, 299)])
