@@ -14,3 +14,8 @@ class DataCheckerItem(scrapy.Item):
     name = scrapy.Field()
     link = scrapy.Field()
     organization = scrapy.Field()
+
+
+class Article(scrapy.Item):
+   title = scrapy.Field()
+   link = scrapy.Field()
