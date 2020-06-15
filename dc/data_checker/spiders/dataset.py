@@ -8,6 +8,12 @@ class DatasetSpider(scrapy.Spider):
     start_urls = ['http://catalog.data.gov/dataset/']
     max_pages = 5
 
+    # Enable Feed Storage
+    custom_settings = {
+        'FEED_FORMAT': 'json',
+        'FEED_URI': 'file:///tmp/%(time)s.json'
+    }
+
     def parse(self, response):
         host = response.url.split("/dataset")[0]
         for dataset in response.css(".dataset-content"):
