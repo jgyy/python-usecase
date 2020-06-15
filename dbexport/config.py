@@ -1,5 +1,4 @@
 # $Env:DB_URL="postgres://jgyy:jgyy@13.229.62.87:80/reviews"
-# $Env:PYTHONPATH="."
 # python .\dbexport\config.py
 import os
 from functools import lru_cache
