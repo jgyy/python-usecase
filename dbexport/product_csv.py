@@ -11,7 +11,7 @@ from sqlalchemy.sql import func
 os.environ["DB_URL"] = "postgres://jgyy:jgyy@13.229.62.87:80/reviews"
 Session = session_class()
 
-csv_file = open("product_ratings.csv", mode="w")
+csv_file = open("./dbexport/product_ratings.csv", mode="w")
 fields = ["name", "level", "published", "created_on", "review_count", "avg_rating"]
 csv_writer = csv.DictWriter(csv_file, fieldnames=fields)
 csv_writer.writeheader()
