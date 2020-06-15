@@ -24,12 +24,11 @@ alter table reviews add constraint rating_check CHECK (
 """
 import os
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Text, Boolean, TIMESTAMP, ForeignKey, func
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Text, Boolean, TIMESTAMP, ForeignKey, func, create_engine
+from sqlalchemy.orm import relationship, sessionmaker
 from dbexport.config import session_class
 
 Base = declarative_base()
-
 
 class Product(Base):
     __tablename__ = "products"
@@ -42,7 +41,6 @@ class Product(Base):
 
     reviews = relationship("Review", order_by="Review.rating", back_populates="product")
 
-
 class Review(Base):
     __tablename__ = "reviews"
 
@@ -54,6 +52,27 @@ class Review(Base):
 
     product = relationship("Product", back_populates="reviews")
 
+class Post(Base):
+    __tablename__ = "posts"
+
+    id = Column(Integer, primary_key=True)
+    body = Column(Text, nullable=False)
+    author_name = Column(String(50), nullable=False)
+    created_on = Column(TIMESTAMP)
+
+    comments = relationship("Comment", back_populates="post")
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.id"))
+    comment = Column(Text, nullable=False)
+    sentiment = Column(String(10), nullable=False)
+    commenter_name = Column(String(50), nullable=False)
+    created_on = Column(TIMESTAMP)
+
+    post = relationship("Post", back_populates="comments")
 
 if __name__ == "__main__":
     os.environ["DB_URL"] = "postgres://jgyy:jgyy@13.229.62.87:80/reviews"
@@ -66,3 +85,11 @@ if __name__ == "__main__":
     for product in products:
         print(product.name)
     print(products[0].reviews)
+
+    engine = create_engine("postgres://admin:password@3.235.101.189:80/forum")
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    posts = session.query(Post).limit(10).all()
+    post = posts[0]
+    print(post.__dict__)
+    print(post.comments[0].__dict__)
